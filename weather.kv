@@ -48,6 +48,7 @@ WeatherRoot:
 
 <CurrentWeather>:
     orientation: "vertical"
+    conditions: conditions_id
     BoxLayout:
         Label:
             text: "{} ({})".format(root.location[0], root.location[1])
@@ -55,9 +56,8 @@ WeatherRoot:
         Label:
             text: 'Current Temperature: {}'.format(root.temp)
             font_size: dp(20)
-    Label:
-        text: "Current Conditions: {}".format(root.conditions)
-        font_size: dp(20)
+    BoxLayout:
+        id: conditions_id
     BoxLayout:
         Label:
             text: "Minimum Temperature: {}".format(root.temp_min)
@@ -74,3 +74,60 @@ WeatherRoot:
             on_press: app.root.show_add_location_form()
         Button:
             text: "Forecast"
+
+<UnknownConditions@BoxLayout>:
+    conditions: ""
+    canvas:
+        Color:
+            rgb: [0.2, 0.2, 0.2]
+        Ellipse:
+            pos: self.pos
+            size: self.size
+    Label:
+        text: root.conditions
+
+<ClearConditions@BoxLayout>:
+    conditions:
+    canvas:
+        Color:
+            rgb: [0.8, 0.7, 0.3]
+        Line:
+            cap: "round"
+            width: 3
+            points:
+                [self.center_x - (self.height / 2),
+                self.center_y,
+                self.center_x + (self.height / 2),
+                self.center_y]
+        Line:
+            cap: "round"
+            width: 3
+            points:
+                [self.center_x - (self.height / 2),
+                self.center_y,
+                self.center_x + (self.height / 2),
+                self.center_y]
+        Line:
+            cap: "round"
+            width: 3
+            points:
+                [self.center_x - (self.height * .35355),
+                self.center_y - (self.height * .35355),
+                self.center_x + (self.height * .35355),
+                self.center_y + (self.height * .35355)]
+
+        Line:
+            cap: "round"
+            width: 3
+            points:
+                [self.center_x - (self.height * .35355),
+                self.center_y - (self.height * .35355),
+                self.center_x + (self.height * .35355),
+                self.center_y + (self.height * .35355)]
+        Color:
+            rgb: [0.6, 0.5, 0.0]
+        Ellipse:
+            pos: self.center_x - ((self.height - 40) / 2), self.pos[1] + 20
+            size: [self.height - 40, self.height - 40]
+    Label:
+        text: root.conditions

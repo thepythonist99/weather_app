@@ -66,8 +66,10 @@ class AddLocationForm(BoxLayout):  # the root class in the KV language file
 
 
 class CurrentWeather(BoxLayout):
+    current_conditions = ObjectProperty()
+
     location = ListProperty(['Yaounde', 'CM'])
-    conditions = StringProperty()
+    conditions = ObjectProperty()
     temp = NumericProperty()
     temp_min = NumericProperty()
     temp_max = NumericProperty()
@@ -82,10 +84,16 @@ class CurrentWeather(BoxLayout):
 
     def weather_retrieved(self, request, data):
         data = json.loads(data.decode()) if not isinstance(data, dict) else data
-        self.conditions = data['weather'][0]['description']
+        self.render_conditions(data['weather'][0]['description'])
         self.temp = data['main']['temp']
         self.temp_min = data['main']['temp_min']
         self.temp_max = data['main']['temp_max']
+
+    def render_conditions(self, conditions_description):
+        conditions_widget = Factory.UnknownConditions()
+        conditions_widget.conditions = conditions_description
+        self.conditions.clear_widgets()
+        self.conditions.add_widget(conditions_widget)
 
 
 class WeatherRoot(BoxLayout):
