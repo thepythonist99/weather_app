@@ -1,9 +1,13 @@
 import json
 
+from kivy.metrics import dp
 from kivy.network.urlrequest import UrlRequest
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.listview import ListItemButton
+from kivy.uix.popup import Popup
+from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.properties import ObjectProperty, ListProperty, NumericProperty, StringProperty
 
 from kivy.factory import Factory
@@ -12,18 +16,25 @@ from kivy.factory import Factory
 class AddLocationForm(BoxLayout):  # the root class in the KV language file
     search_input = ObjectProperty()
     search_results = ObjectProperty()
-    label_set_error = ObjectProperty()
 
     def search_location(self):
-        try:
+        if len(self.search_input.text) != 0:
+            content = Button(text='Dismiss', height=dp(40), size_hint_y=None)
+            popup = Popup(title="Please wait while we search for '{}'".format(self.search_input.text), content=content,
+                          size_hint=(None, None), size=(400, 150), auto_dismiss=False)
+            content.bind(on_press=popup.dismiss)
+
             search_template = "http://api.openweathermap.org/data/2.5/" + "find?q={}&type=like&APPID=5cc1da8c59b625759c95307e0b38b3fc"
             search_url = search_template.format(self.search_input.text)
             print(search_url)
             print("finding location.........")
             request = UrlRequest(search_url, self.found_location)
+            popup.open()
             print("The user searched for '{}'".format(self.search_input.text))
-        except request.error as e:
-            print("Connection Lost.".format(e))
+        else:
+            popup = Popup(title='Error', content=Label(text="Please enter a known city."), size_hint=(None, None), size=(400, 100),
+                          auto_dismiss=True)
+            popup.open()
 
     def found_location(self, request, data):
         try:

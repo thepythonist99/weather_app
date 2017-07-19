@@ -10,7 +10,6 @@ WeatherRoot:
     orientation: "vertical"
     search_input: search_box
     search_results: search_results_list
-    label_set_error: error_label
     BoxLayout:
         height: dp(40)
         size_hint_y: None
@@ -35,12 +34,6 @@ WeatherRoot:
         adapter:
             ListAdapter(data=[], cls=main.LocationButton, args_converter=root.args_converter)
     BoxLayout:
-        height: dp(30)
-        size_hint_y: None
-        Button:
-            text: "Cancel"
-            on_press: app.root.show_current_weather(None)
-    BoxLayout:
         height: dp(10)
         size_hint_y: None
         Label:
@@ -55,25 +48,23 @@ WeatherRoot:
 
 <CurrentWeather>:
     orientation: "vertical"
-    Label:
-        text: "{} ({})".format(root.location[0], root.location[1])
-        font_size: dp(40)
-    Label:
-        text: 'Current Temperature: {}'.format(root.temp)
-        text_size: self.size
-        font_size: dp(20)
-    Label:
-        text: "Minimum Temperature: {}".format(root.temp_min)
-        text_size: self.size
-        font_size: dp(20)
-    Label:
-        text: "Maximum Temperature: {}".format(root.temp_max)
-        text_size: self.size
-        font_size: dp(20)
+    BoxLayout:
+        Label:
+            text: "{} ({})".format(root.location[0], root.location[1])
+            font_size: dp(40)
+        Label:
+            text: 'Current Temperature: {}'.format(root.temp)
+            font_size: dp(20)
     Label:
         text: "Current Conditions: {}".format(root.conditions)
-        text_size: self.size
         font_size: dp(20)
+    BoxLayout:
+        Label:
+            text: "Minimum Temperature: {}".format(root.temp_min)
+            font_size: dp(20)
+        Label:
+            text: "Maximum Temperature: {}".format(root.temp_max)
+            font_size: dp(20)
     BoxLayout:
         orientation: "horizontal"
         size_hint_y: None
