@@ -1,4 +1,5 @@
 import json
+import random
 
 from kivy.metrics import dp
 from kivy.network.urlrequest import UrlRequest
@@ -8,8 +9,10 @@ from kivy.uix.listview import ListItemButton
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.properties import ObjectProperty, ListProperty, NumericProperty, StringProperty
 
+from kivy.graphics import Color, Ellipse
+from kivy.clock import Clock
+from kivy.properties import ObjectProperty, ListProperty, NumericProperty, StringProperty
 from kivy.factory import Factory
 
 
@@ -90,7 +93,12 @@ class CurrentWeather(BoxLayout):
         self.temp_max = data['main']['temp_max']
 
     def render_conditions(self, conditions_description):
-        conditions_widget = Factory.UnknownConditions()
+        if "clear" in conditions_description.lower():
+            conditions_widget = Factory.ClearConditions()
+        elif "snow" in conditions_description.lower():
+            conditions_widget = SnowConditions()
+        else:
+            conditions_widget = Factory.UnknownConditions()
         conditions_widget.conditions = conditions_description
         self.conditions.clear_widgets()
         self.conditions.add_widget(conditions_widget)
@@ -113,6 +121,39 @@ class WeatherRoot(BoxLayout):
         self.clear_widgets()
         location_form = AddLocationForm()
         self.add_widget(location_form)
+
+
+class Conditions(BoxLayout):
+    conditions = StringProperty()
+
+
+class SnowConditions(Conditions):
+    FLAKE_SIZE = 5
+    NUM_FLAKES = 60
+    FLAKE_AREA = FLAKE_SIZE * NUM_FLAKES
+    FLAKE_INTERVAL = 1.0 / 30.0
+
+    def __init__(self, **kwargs):
+        super(SnowConditions, self).__init__(**kwargs)
+        self.flakes = [[x * self.FLAKE_SIZE, 0] for x in range(self.NUM_FLAKES)]
+        Clock.schedule_interval(self.update_flakes, self.FLAKE_INTERVAL)
+
+    def update_flakes(self, time):
+        for f in self.flakes:
+            f[0] += random.choice([-1, 1])
+            f[1] -= random.randint(0, self.FLAKE_SIZE)
+            if f[1] <= 0:
+                f[1] = random.randint(0, int(self.height))
+
+        self.canvas.before.clear()
+        with self.canvas.before:
+            widget_x = self.center_x - self.FLAKE_AREA / 2
+            widget_y = self.pos[1]
+            for x_flake, y_flake in self.flakes:
+                x = widget_x + x_flake
+                y = widget_y + y_flake
+                Color(0.9, 0.9, 1.0)
+                Ellipse(pos=(x, y), size=(self.FLAKE_SIZE, self.FLAKE_SIZE))
 
 
 class LocationButton(ListItemButton):
