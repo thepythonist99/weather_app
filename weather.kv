@@ -10,7 +10,6 @@ WeatherRoot:
     orientation: "vertical"
     search_input: search_box
     search_results: search_results_list
-    label_set_error: error_label
     BoxLayout:
         height: dp(40)
         size_hint_y: None
@@ -35,12 +34,6 @@ WeatherRoot:
         adapter:
             ListAdapter(data=[], cls=main.LocationButton, args_converter=root.args_converter)
     BoxLayout:
-        height: dp(30)
-        size_hint_y: None
-        Button:
-            text: "Cancel"
-            on_press: app.root.show_current_weather(None)
-    BoxLayout:
         height: dp(10)
         size_hint_y: None
         Label:
@@ -55,25 +48,23 @@ WeatherRoot:
 
 <CurrentWeather>:
     orientation: "vertical"
-    Label:
-        text: "{} ({})".format(root.location[0], root.location[1])
-        font_size: dp(40)
-    Label:
-        text: 'Current Temperature: {}'.format(root.temp)
-        text_size: self.size
-        font_size: dp(20)
-    Label:
-        text: "Minimum Temperature: {}".format(root.temp_min)
-        text_size: self.size
-        font_size: dp(20)
-    Label:
-        text: "Maximum Temperature: {}".format(root.temp_max)
-        text_size: self.size
-        font_size: dp(20)
-    Label:
-        text: "Current Conditions: {}".format(root.conditions)
-        text_size: self.size
-        font_size: dp(20)
+    conditions: conditions_id
+    BoxLayout:
+        Label:
+            text: "{} ({})".format(root.location[0], root.location[1])
+            font_size: dp(40)
+        Label:
+            text: 'Current Temperature: {}'.format(root.temp)
+            font_size: dp(20)
+    BoxLayout:
+        id: conditions_id
+    BoxLayout:
+        Label:
+            text: "Minimum Temperature: {}".format(root.temp_min)
+            font_size: dp(20)
+        Label:
+            text: "Maximum Temperature: {}".format(root.temp_max)
+            font_size: dp(20)
     BoxLayout:
         orientation: "horizontal"
         size_hint_y: None
@@ -83,3 +74,60 @@ WeatherRoot:
             on_press: app.root.show_add_location_form()
         Button:
             text: "Forecast"
+
+<UnknownConditions@Conditions>:
+    conditions: ""
+    canvas.before:
+        Color:
+            rgb: [0.2, 0.2, 0.2]
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<ClearConditions@Conditions>:
+    conditions: ""
+    canvas.before:
+        Color:
+            rgb: [0.8, 0.7, 0.3]
+        Line:
+            cap: "round"
+            width: 3
+            points:
+                [self.center_x - (self.height / 2),
+                self.center_y,
+                self.center_x + (self.height / 2),
+                self.center_y]
+        Line:
+            cap: "round"
+            width: 3
+            points:
+                [self.center_x,
+                self.center_y  - (self.height / 2),
+                self.center_x,
+                self.center_y  + (self.height / 2)]
+        Line:
+            cap: "round"
+            width: 3
+            points:
+                [self.center_x - (self.height * .35355),
+                self.center_y - (self.height * .35355),
+                self.center_x + (self.height * .35355),
+                self.center_y + (self.height * .35355)]
+
+        Line:
+            cap: "round"
+            width: 3
+            points:
+                [self.center_x - (self.height * .35355),
+                self.center_y + (self.height * .35355),
+                self.center_x + (self.height * .35355),
+                self.center_y - (self.height * .35355)]
+        Color:
+            rgb: [0.6, 0.5, 0.0]
+        Ellipse:
+            pos: self.center_x - ((self.height - 40) / 2), self.pos[1] + 20
+            size: [self.height - 40, self.height - 40]
+
+<Conditions>:
+    Label:
+        text: root.conditions
